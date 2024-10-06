@@ -9,26 +9,45 @@ lip_height      =   9.0;         // How far down the diffuser sits on the head
 shrink_radius   =   2.1;         // How far inward to shrink the diffuser
 flange_height   =   2.1;         // Vertical height of 45° bottom flange
 spacer_height   =   4.2;         // Height of spacer spanning the wire posts
-spacer_width    =   2.1;         // Hull thickness of spacer
+spacer_width    =   2.4;         // Hull thickness of spacer
 bottom_post_gap =  60.0;         // Gap between wire posts on bottom support
 wire_thickness  =   0.95;        // How thick the bottom support post wire is
 thickness       =   1.2;         // Default wall thickness
 
+// Correction factors
+light_correction = 0.5;  // Add to flashlight diameter
+
 e = 0.1;
 e2 = e * 2;
+thickness2 = thickness * 2;
 $fn = 90;
 
+// Top piece, which holds top of paper lantern taut
 module hat() {
-  difference() {
-    translate([0, 0, shade_diameter / 2]) sphere(d = shade_diameter);
-    cylinder(d = shade_diameter + e2, h = shade_diameter * 0.92);  // TODO: fix
+  // The flat plug that rests against top aperture of the paper lantern
+  hull() {
+    cylinder(d = top_diameter, h = thickness2);
+    translate([0, 0, thickness * 3]) {
+      cylinder(d = top_diameter + (thickness * 4), h = thickness);
+    }
+  }
+  // The flashlight shaft equivalent that the diffuser snaps into
+  hull() {
+    translate([0, 0, thickness * 4]) {
+      h = (lip_height * 0.75);
+      cylinder(d = light_diameter, h = h - thickness);
+      translate([0, 0, h - thickness]) {
+        cylinder(d = light_diameter - thickness2, h = thickness);
+      }
+    }
   }
 }
 
+// Middle shaft, which is the vertical support and attaches to the flashlight
 module diffuser() {
   // Lip of the diffuser, or the part which sits on the flashlight head
-  lip_id = light_diameter;
-  lip_od = lip_id + (thickness * 2);
+  lip_id = light_diameter + light_correction;
+  lip_od = lip_id + thickness2;
   lip_flange_od = lip_od + (2 * flange_height);
   difference() {
     union() {
@@ -41,7 +60,7 @@ module diffuser() {
   }
   // Main cylindrical shaft above the flashlight
   shaft_id = light_diameter - (shrink_radius * 2);
-  shaft_od = shaft_id + (thickness * 2);
+  shaft_od = shaft_id + thickness2;
   shaft_height = shade_diameter - 120;  // TODO: fix
   belt_height = shrink_radius * 2;
   translate([0, 0, lip_height]) {
@@ -63,11 +82,24 @@ module diffuser() {
   }
 }
 
+// Coupler which attaches to the wire loops at the bottom of the lantern
 module spacer() {
-  id = light_diameter;
-  od = id + (thickness * 2);
+  id = light_diameter + light_correction + thickness2;
+  od = id + thickness2;
   flange_od = od + (2 * flange_height);
   spacer_length = bottom_post_gap + spacer_height;
+
+  module wire_notch() {
+    h = spacer_height * 0.66;
+    translate([-h, (spacer_width / 2) + e, 0]) {
+      rotate(90, [1, 0, 0]) {
+        linear_extrude(spacer_width + e2) {
+          polygon([[0, -e], [0, 0], [h, h], [h, -e]]);
+        }
+      }
+    }
+  }
+
   difference() {
     union() {
       cylinder(d = flange_od, h = spacer_height);
@@ -84,19 +116,23 @@ module spacer() {
         }
       }
     }
-    translate([0, 0, spacer_height * 0.4]) {
-      translate([(bottom_post_gap / 2) - (wire_thickness / 2), -((spacer_width / 2) + e), 0]) {
-        cube([wire_thickness, spacer_width + e2, (spacer_height * 0.6) + e]);
-      }
-      translate([-(bottom_post_gap / 2) - (wire_thickness / 2), -((spacer_width / 2) + e), 0]) {
-        cube([wire_thickness, spacer_width + e2, (spacer_height * 0.6) + e]);
+    translate([bottom_post_gap / 2, 0, 0]) {
+      wire_notch();
+      translate([(spacer_height * 0.66) + thickness, 0, 0]) wire_notch();
+    }
+    mirror([1, 0, 0]) {
+      translate([bottom_post_gap / 2, 0, 0]) {
+        wire_notch();
+        translate([(spacer_height * 0.66) + thickness, 0, 0]) wire_notch();
       }
     }
   }
 }
 
-hat();
-
-diffuser();
-
-translate([0, 0, -(spacer_height + 10)]) spacer();
+difference() {
+  union() {
+    translate([0, 0, shade_height + 10]) hat();
+    diffuser();
+    translate([0, 0, -(spacer_height + 1)]) spacer();
+  }
+}
