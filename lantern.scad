@@ -2,8 +2,8 @@
 // Andrew Ho <andrew@zeuscat.com>
 
 shade_diameter  =   6.0 * 25.4;  // Interior diameter of lampshade sphere
-shade_height    = 131.0;         // Height from bottom supports to top opening
-top_diameter    =  49.8;         // Diameter of top opening
+shade_height    = 111.9;         // Height from bottom supports to top opening
+top_diameter    =  49.0;         // Diameter of top opening
 light_diameter  =  25.6;         // Exterior diameter of flashlight head
 lip_height      =   9.0;         // How far down the diffuser sits on the head
 shrink_radius   =   2.1;         // How far inward to shrink the diffuser
@@ -15,7 +15,7 @@ wire_thickness  =   0.95;        // How thick the bottom support post wire is
 thickness       =   1.2;         // Default wall thickness
 
 // Correction factors
-light_correction = 0.5;  // Add to flashlight diameter
+light_correction = 0.3;  // Add to flashlight diameter
 
 e = 0.1;
 e2 = e * 2;
@@ -60,8 +60,10 @@ module diffuser() {
     translate([0, 0, -e]) cylinder(d = lip_id, h = lip_height + e2);
   }
   // Main cylindrical shaft above the flashlight
+  t = 1.0;
+  t2 = t * 2;
   shaft_id = light_diameter - (shrink_radius * 2);
-  shaft_od = shaft_id + thickness2;
+  shaft_od = shaft_id + t2;
   shaft_height = shade_height - (thickness * 6);  // TODO: calculate better
   belt_height = shrink_radius * 2;
   translate([0, 0, lip_height]) {
@@ -108,7 +110,7 @@ module spacer() {
         cube([spacer_length, spacer_width, spacer_height]);
       }
     }
-    translate([0, 0, -e]) cylinder(d = id, h = spacer_height + e2);
+    translate([0, 0, -e]) cylinder(d = id - thickness2, h = spacer_height + e2);
     translate([0, 0, spacer_height - flange_height]) {
       hull() {
         cylinder(d1 = id, d2 = id + (2 * flange_height), h = flange_height);
