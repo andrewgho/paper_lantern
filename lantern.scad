@@ -3,13 +3,13 @@
 
 shade_diameter  =   6.0 * 25.4;  // Interior diameter of lampshade sphere
 shade_height    = 131.0;         // Height from bottom supports to top opening
-top_diameter    =  52.0;         // Diameter of top opening
+top_diameter    =  49.8;         // Diameter of top opening
 light_diameter  =  25.6;         // Exterior diameter of flashlight head
 lip_height      =   9.0;         // How far down the diffuser sits on the head
 shrink_radius   =   2.1;         // How far inward to shrink the diffuser
 flange_height   =   2.1;         // Vertical height of 45° bottom flange
-spacer_height   =   4.2;         // Height of spacer spanning the wire posts
-spacer_width    =   2.4;         // Hull thickness of spacer
+spacer_height   =   6.0;         // Height of spacer spanning the wire posts
+spacer_width    =   3.9;         // Hull thickness of spacer
 bottom_post_gap =  60.0;         // Gap between wire posts on bottom support
 wire_thickness  =   0.95;        // How thick the bottom support post wire is
 thickness       =   1.2;         // Default wall thickness
@@ -20,24 +20,25 @@ light_correction = 0.5;  // Add to flashlight diameter
 e = 0.1;
 e2 = e * 2;
 thickness2 = thickness * 2;
-$fn = 90;
+$fn = 120;
 
 // Top piece, which holds top of paper lantern taut
 module hat() {
   // The flat plug that rests against top aperture of the paper lantern
   hull() {
-    cylinder(d = top_diameter, h = thickness2);
-    translate([0, 0, thickness * 3]) {
-      cylinder(d = top_diameter + (thickness * 4), h = thickness);
+    cylinder(d = top_diameter, h = e);
+    translate([0, 0, thickness * 5]) {
+      cylinder(d = top_diameter + (thickness * 10), h = thickness);
     }
   }
   // The flashlight shaft equivalent that the diffuser snaps into
+  d = light_diameter - (shrink_radius * 2) - e2;
+  h = (lip_height * 0.8);
   hull() {
-    translate([0, 0, thickness * 4]) {
-      h = (lip_height * 0.75);
-      cylinder(d = light_diameter, h = h - thickness);
+    translate([0, 0, thickness * 6]) {
+      cylinder(d = d, h = h - thickness);
       translate([0, 0, h - thickness]) {
-        cylinder(d = light_diameter - thickness2, h = thickness);
+        cylinder(d = d - thickness2, h = thickness);
       }
     }
   }
@@ -61,7 +62,7 @@ module diffuser() {
   // Main cylindrical shaft above the flashlight
   shaft_id = light_diameter - (shrink_radius * 2);
   shaft_od = shaft_id + thickness2;
-  shaft_height = shade_diameter - 120;  // TODO: fix
+  shaft_height = shade_height - (thickness * 6);  // TODO: calculate better
   belt_height = shrink_radius * 2;
   translate([0, 0, lip_height]) {
     difference() {
