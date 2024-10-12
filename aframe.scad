@@ -1,15 +1,17 @@
-top_diameter    =  49.0;  // Diameter of top opening
-shoulder_length =  10.0;  // Exterior length of shoulder
+top_diameter    =  50.0;  // Diameter of top opening (corrected)
+shoulder_length =   7.5;  // Exterior length of shoulder
 shoulder_slump  =   5.1;  // How far down the lower edge of the shoulder goes
-neck_height     =   7.5;  // How high up the neck of the top frame protrudes
-light_diameter  =  25.9;  // Exterior diameter of flashlight head (corrected)
+neck_height     =   5.4;  // How high up the neck of the top frame protrudes
+light_diameter  =  26.0;  // Exterior diameter of flashlight head (corrected)
 interior_height = 129.0;  // From top of bottom wire posts to top shoulder
 
-frame_width     =   6.0;  // Width of the A-frame (along latitudinal direction)
+frame_width     =   5.1;  // Width of the A-frame (along latitudinal direction)
 frame_thickness =   2.1;  // Thickness of A-frame (inwards to center)
-peg_height      =   7.5;  // Height of peg connecting A-frame with collet
+peg_height      =   5.4;  // Height of peg connecting A-frame with collet
 peg_thickness   =   1.5;  // Thickness of peg connecting A-frame with collet
-bottom_post_gap =  60.0;  // Gap between wire posts on bottom support
+peg_depth       =   4.5;  // How far down the peg goes into the post
+bottom_post_gap =  69.0;  // Gap between wire posts on bottom support
+// Off by 9mm???
 
 collet_small_thickness = 2.1;
 collet_large_thickness = peg_thickness + collet_small_thickness;
@@ -18,6 +20,9 @@ collet_height = frame_thickness + peg_height + 4.5;
 top_radius = top_diameter / 2;
 light_radius = light_diameter / 2;
 bottom_post_radius = bottom_post_gap / 2;
+
+cgap = 0.15;  // Correction gap
+cgap2 = cgap * 2;
 
 e = 0.1;
 e2 = e * 2;
@@ -43,6 +48,9 @@ module aframe() {
       [top_radius + t, interior_height],
       [top_radius + t2 + shoulder_length, interior_height - shoulder_slump],
       [bottom_post_radius, 0],
+      [bottom_post_radius - (t / 3), -peg_depth],
+      [bottom_post_radius - (2 * t / 3), -peg_depth],
+      [bottom_post_radius - t, 0],
       // TODO: actual post
       [r, 0]
     ]);
@@ -57,24 +65,38 @@ module collet() {
   r = light_radius;  // TODO: should be diffuser radius
   short_length = (r + collet_small_thickness) * 2;
   long_length = (r + collet_large_thickness) * 2;
+  cutout_upper_length = long_length - (peg_thickness * 2) - cgap2;
+  cutout_width = frame_width + cgap;
   difference() {
-    translate([-long_length / 2, -short_length / 2, 0]) {
-      // TODO: should be a nicer rounded shape
-      cube([long_length, short_length, collet_height]);
+    hull() {
+      translate([-collet_large_thickness / 2, 0, 0]) {
+        cylinder(r = short_length / 2, h = collet_height);
+      }
+      translate([collet_large_thickness / 2, 0, 0]) {
+        cylinder(r = short_length / 2, h = collet_height);
+      }
     }
     // Cut out flashlight diffuser cylinder
     translate([0, 0, -e]) cylinder(r = r, h = collet_height + e2);
-    // Cut out peg insert (bottom portion)
-    translate([-(long_length / 2) - e, -frame_width / 2, -e]) {
-      cube([long_length + e2, frame_width, frame_thickness + e]);
+    // Cut out peg insert (upper peg insertion portion)
+    translate([-cutout_upper_length / 2, -cutout_width / 2, -e]) {
+      cube([cutout_upper_length, cutout_width, e + frame_thickness + peg_height + cgap]);
     }
-    // Cut out peg insert (peg insertion portion)
-    translate([-(long_length / 2) + peg_thickness, -frame_width / 2, -e]) {
-      cube([long_length - (peg_thickness * 2), frame_width, frame_thickness + peg_height + e]);
+    // Cut out peg insert (lower frame portion)
+    translate([-(long_length / 2) - 1, -cutout_width / 2, -e]) {
+      cube([1 + long_length + 1, cutout_width, e + frame_thickness + cgap]);
     }
   }
 }
 
-rotate(90, [1, 0, 0]) aframe();
+module visual() {
+  rotate(90, [1, 0, 0]) aframe();
+  translate([0, 0, peg_height + 10]) collet();
+}
 
-translate([0, 0, peg_height + 10]) collet();
+module printable() {
+  translate([0, -interior_height / 2, frame_width / 2]) aframe();
+  translate([0, 0, collet_height]) mirror([0, 0, 1]) collet();
+}
+
+printable();
