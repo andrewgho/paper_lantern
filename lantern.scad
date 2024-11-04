@@ -2,20 +2,20 @@
 // Andrew Ho <andrew@zeuscat.com>
 
 shade_diameter  =   6.0 * 25.4;  // Interior diameter of lampshade sphere
-shade_height    = 111.9;         // Height from bottom supports to top opening
-top_diameter    =  49.0;         // Diameter of top opening
+shade_height    = 109.2;         // Height from bottom supports to top opening
+top_diameter    =  40.5;         // Diameter of top opening
 light_diameter  =  25.6;         // Exterior diameter of flashlight head
 lip_height      =   9.0;         // How far down the diffuser sits on the head
 shrink_radius   =   2.1;         // How far inward to shrink the diffuser
 flange_height   =   2.1;         // Vertical height of 45° bottom flange
 spacer_height   =   6.0;         // Height of spacer spanning the wire posts
 spacer_width    =   3.9;         // Hull thickness of spacer
-bottom_post_gap =  60.0;         // Gap between wire posts on bottom support
+bottom_post_gap =  58.5;         // Gap between wire posts on bottom support
 wire_thickness  =   0.95;        // How thick the bottom support post wire is
 thickness       =   1.2;         // Default wall thickness
 
 // Correction factors
-light_correction = 0.3;  // Add to flashlight diameter
+light_correction = 0.2;  // Add to flashlight diameter
 
 e = 0.1;
 e2 = e * 2;
@@ -32,7 +32,7 @@ module hat() {
     }
   }
   // The flashlight shaft equivalent that the diffuser snaps into
-  d = light_diameter - (shrink_radius * 2) - e2;
+  d = light_diameter - (shrink_radius * 2);
   h = (lip_height * 0.8);
   hull() {
     translate([0, 0, thickness * 6]) {
@@ -132,10 +132,20 @@ module spacer() {
   }
 }
 
-difference() {
-  union() {
-    translate([0, 0, shade_height + 10]) hat();
-    diffuser();
-    translate([0, 0, -(spacer_height + 1)]) spacer();
+module visual() {
+  difference() {
+    union() {
+      translate([0, 0, shade_height + 10]) hat();
+      diffuser();
+      translate([0, 0, -(spacer_height + 1)]) spacer();
+    }
   }
 }
+
+module printable() {
+  hat();
+  translate([47, 0, 0]) diffuser();
+  translate([32, -36, 0]) spacer();
+}
+
+printable();
