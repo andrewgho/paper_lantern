@@ -1,6 +1,9 @@
 // paper_lantern.scad - paper lantern flashlight diffuser
 // Andrew Ho <andrew@zeuscat.com>
 //
+// This work is licensed under CC BY 4.0. To view a copy of this license,
+// visit: https://creativecommons.org/licenses/by/4.0/
+//
 // Default values here are for an FW3A flashlight and a 6" collapsible paper
 // lantern, for example from paperlanterns.com or from Amazon (search for
 // "6 inch paper lantern").
