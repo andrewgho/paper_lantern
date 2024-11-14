@@ -7,12 +7,12 @@ else
   OPENSCAD = openscad
 endif
 
-TARGETS = lantern.stl
+TARGETS = paper_lantern.stl
 
 all: $(TARGETS)
 
-lantern.stl: lantern.scad
-	$(OPENSCAD) -o lantern.stl lantern.scad
+paper_lantern.stl: paper_lantern.scad
+	$(OPENSCAD) -o paper_lantern.stl paper_lantern.scad
 
 clean:
 	@rm -f $(TARGETS)

@@ -1,5 +1,9 @@
-// lantern.scad - paper lantern scaffolding for FW3A flashlight
+// paper_lantern.scad - paper lantern flashlight diffuser
 // Andrew Ho <andrew@zeuscat.com>
+//
+// Default values here are for an FW3A flashlight and a 6" collapsible paper
+// lantern, for example from paperlanterns.com or from Amazon (search for
+// "6 inch paper lantern").
 
 shade_diameter  =   6.0 * 25.4;  // Interior diameter of lampshade sphere
 shade_height    = 109.2;         // Height from bottom supports to top opening
@@ -132,6 +136,7 @@ module spacer() {
   }
 }
 
+// Use this composite to preview in OpenSCAD GUI
 module visual() {
   difference() {
     union() {
@@ -142,6 +147,7 @@ module visual() {
   }
 }
 
+// Use this composite to print (or, print parts separately for higher quality)
 module printable() {
   hat();
   translate([47, 0, 0]) diffuser();
