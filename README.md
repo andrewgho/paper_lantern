@@ -117,6 +117,9 @@ I love this lampshade (it's so cute!), and have carried it on road trips where
 I didn't have to worry about luggage space; but it is tricky to pack (takes up
 a lot of room, and can be a bit fragile unless you can print it in ABS).
 
+This project is also listed on [Printables](https://www.printables.com):
+[Paper lantern flashlight diffuser on Printables](https://www.printables.com/model/1074651-paper-lantern-flashlight-diffuser)
+
 Author
 ------
 
