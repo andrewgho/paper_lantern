@@ -1,5 +1,5 @@
-paper_lantern - paper lantern flashlight diffuser
-=================================================
+Paper lantern flashlight diffuser
+=================================
 
 This is a set of 3D printable objects which turn a flashlight and a cheap
 paper lantern into a beautiful room light that is easy to travel with.
